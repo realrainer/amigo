@@ -52,6 +52,7 @@ type Settings struct {
 	ActionTimeout     time.Duration
 	DialTimeout       time.Duration
 	ReconnectInterval time.Duration
+	PingTimeout time.Duration
 	Keepalive         bool
 }
 

@@ -38,6 +38,7 @@ type amiAdapter struct {
 	connected     bool
 	actionTimeout time.Duration
 	dialTimeout   time.Duration
+	pingTimeout   time.Duration
 
 	actionsChan   chan map[string]string
 	responseChans map[string]chan map[string]string
@@ -53,6 +54,7 @@ func newAMIAdapter(s *Settings, eventEmitter func(string, string)) (*amiAdapter,
 	a.password = s.Password
 	a.actionTimeout = s.ActionTimeout
 	a.dialTimeout = s.DialTimeout
+	a.pingTimeout = s.PingTimeout
 	a.mutex = &sync.RWMutex{}
 	a.emitEvent = eventEmitter
 
@@ -138,7 +140,7 @@ func nextID() string {
 }
 
 func (a *amiAdapter) pinger(stop <-chan struct{}, errChan chan error) {
-	ticker := time.NewTicker(pingInterval)
+	ticker := time.NewTicker(a.pingTimeout)
 	defer ticker.Stop()
 	ping := map[string]string{"Action": "Ping", "ActionID": pingActionID, amigoConnIDKey: a.id}
 	for {
